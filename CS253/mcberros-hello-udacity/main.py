@@ -14,20 +14,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import os
 import webapp2
+import jinja2
 
-def escape_html(s):
-    escape_list=(("&","&amp;"),(">","&gt;"),("<","&lt;"),('"',"&quot;"))
-    for (i,o) in escape_list:
-        s=s.replace(i,o)
-    return s
+from google.appengine.ext import db
 
-class MainHandler(webapp2.RequestHandler):
-    def write_form(self, error="", month="", day="", year=""):
+template_dir=os.path.join(os.path.dirname(__file__), 'templates')
+jinja_env=jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape =True)
+
+class Handler(webapp2.RequestHandler):
+    def write(self, *a, **kw):
+	self.response.out.write(*a, **kw)
+
+    def render_str(Self, template, **params):
+	t=jinja_env.get_template(template)
+	return t.render(params)
+
+    def render(self, template, **kw):
+	self.write(self.render_str(template, **kw))
+
+class Art(db.Model):
+    title=db.StringProperty(required = True)
+    art=db.TextProperty(required = True)
+    created=db.DateTimeProperty(auto_now_add = True)
+
+class MainHandler(Handler):
+    def render_front(self, title="", art="", error=""):
+	arts=db.GqlQuery("SELECT * FROM Art ORDER BY created DESC")
+	self.render("index.html", title=title, art=art, error=error, arts=arts)
 
     def get(self):
-        self.write_form()
-
+	self.render_front()
+ 
     def post(self):
+	title=self.request.get("title")
+	art=self.request.get("art")
+
+	if title and art:
+	   a=Art(title=title, art=art)
+	   a.put()
+	   self.redirect("/")
+	else:
+	   error="we need both a title and an art"
+	   self.render_front(title, art, error)
 
 app = webapp2.WSGIApplication([('/', MainHandler)], debug=True)
