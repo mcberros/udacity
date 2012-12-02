@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CS 253 Blog</title>
+    </head>
+
+    <body>
+	<h1>CS 253 Blog</h1>
+
+	{% for entry in entries %}
+	   <div class="entry">
+		<div class="subject">{{entry.subject}}</div>
+		<div class="created">{{entry.last_modified.strftime('%b %d, %Y')}}</div>
+		<hr>
+		<pre class="content">{{entry.content}}</pre>
+	   </div>
+	{% endfor %}
+    </body>
+</html>
