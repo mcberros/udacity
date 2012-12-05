@@ -39,12 +39,24 @@ class Art(db.Model):
     art=db.TextProperty(required = True)
     created=db.DateTimeProperty(auto_now_add = True)
 
-class MainHandler(Handler):
+class ArtHandler(Handler):
     def render_front(self, title="", art="", error=""):
-	pass
-	#self.render("index.html", title=title, art=art, error=error, arts=arts)
+	arts=db.GqlQuery("SELECT * FROM Art ORDER BY created DESC")
+	self.render("art.html", title=title, art=art, error=error, arts=arts)
 
     def get(self):
 	self.render_front()
+ 
+    def post(self):
+	title=self.request.get("title")
+	art=self.request.get("art")
 
-app = webapp2.WSGIApplication([('/', MainHandler)], debug=True)
+	if title and art:
+	   a=Art(title=title, art=art)
+	   a.put()
+	   self.redirect("/art")
+	else:
+	   error="we need both a title and an art"
+	   self.render_front(title, art, error)
+
+app = webapp2.WSGIApplication([('/art', ArtHandler)], debug=True)
