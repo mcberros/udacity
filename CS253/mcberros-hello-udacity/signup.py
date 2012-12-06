@@ -27,6 +27,8 @@ from google.appengine.ext import db
 template_dir=os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env=jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape =True)
 
+#Funciones para el Hash de las cookies
+
 SECRET = 'imsosecret'
 
 def hash_str(s):
@@ -40,15 +42,32 @@ def check_secure_val(h):
     if h == make_secure_val(value):
         return value
 
+#Funcionaes para el salt de las passwords
+
+def make_salt():
+    return ''.join(random.choice(string.letters) for x in xrange(5))
+
+def make_pw_hash(name, pw, salt=None):
+    if not salt:
+        salt = make_salt()
+    h = hashlib.sha256(name + pw + salt).hexdigest()
+    return '%s,%s' % (h, salt)
+
+#BBDD
+
 class User(db.Model):
     username=db.StringProperty(required = True)
     password=db.StringProperty(required = True)
+    salt=db.StringProperty(required = True)
+
+#Clase para validar las entradas del Form
 
 class Validator:
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
     PWD_RE = re.compile(r"^.{3,20}$")
     EMAIL_RE=re.compile(r"^[\S]+@[\S]+\.[\S]+$")
     MSG_ERR_USER="That's not a valid username."
+    MSG_EXIST_USER="That user already exists"
     MSG_ERR_PWD="That wasn't a valid password."
     MSG_ERR_V_PWD="Your passwords didn't match."
     MSG_ERR_EMAIL="That's not a valid email."
@@ -58,6 +77,13 @@ class Validator:
     	if not self.USER_RE.match(username):
        	   is_valid=False
     	return is_valid
+
+    def exist_username(self,username=""):
+	exist=False
+	users=db.GqlQuery("SELECT * FROM User WHERE username=:1",username)
+	if users.count()>0:
+	   exist=True
+        return exist
 
     def valid_password(self,password=""):
         is_valid=True
@@ -78,6 +104,7 @@ class Validator:
            is_valid=False
         return is_valid
 
+#Clase para renderizar
 
 class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
@@ -90,6 +117,8 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
+
+#Clases del flujo de navegacion
 
 class SignUpHandler(Handler):
 	
@@ -113,6 +142,10 @@ class SignUpHandler(Handler):
 
 	    if (not is_valid_username):
 	    	err_msg['error_username']=self.validator.MSG_ERR_USER
+	    else:
+		exist_user=self.validator.exist_username(in_username)
+		if exist_user:
+		   err_msg['error_username']=self.validator.MSG_EXIST_USER
 
 	    is_valid_password=self.validator.valid_password(in_password)
 	    is_valid_match_pwd=self.validator.valid_match_pwd(in_password,in_verify)
@@ -128,14 +161,14 @@ class SignUpHandler(Handler):
 		err_msg['error_email']=self.validator.MSG_ERR_EMAIL
 
 	    if err_msg['error_username']=="" and err_msg['error_password']=="" and err_msg['error_v_password']=="" and err_msg['error_email']=="":
-		u=User(username=in_username,password=in_password)
+		password_hash=make_pw_hash(in_username, in_password)
+		u=User(username=in_username, password=password_hash.split(",")[0], salt=password_hash.split(",")[1])
                 u.put()
 		new_cookie_val = make_secure_val(str(in_username))
 		self.response.headers.add_header('Set-Cookie','username=%s; Path=/' % new_cookie_val)
                 self.redirect("/blog/welcome")
 	    else:
 		self.render_front(in_username,"","",err_msg['error_username'],err_msg['error_password'],err_msg['error_v_password'],in_email,err_msg['error_email'])
-
 
 
 class WelcomeHandler(Handler):
