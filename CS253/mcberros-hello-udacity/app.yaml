@@ -18,6 +18,15 @@ handlers:
 - url: /blog
   script: blog.app
 
+- url: /blog/signup
+  script: signup.app
+
+- url: /blog/welcome
+  script: signup.app
+
+- url: /blog/users
+  script: signup.app
+
 - url: /blog/.*
   script: blog.app
 

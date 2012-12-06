@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Users</title>
+    </head>
+    <body>
+	<h1>Users</h1>
+
+	{% for u in users %}
+	   <div class="user">
+		<div class="username">{{u.username}}</div>
+		<div class="password">{{u.password}}</div>
+	   </div>
+	{% endfor %}
+    </body>
+</html>
