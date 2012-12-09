@@ -56,8 +56,8 @@ class Validator:
 
 
     def valid_email(self,email=""):
-        is_valid=True
-        if not self.EMAIL_RE.match(email):
-           is_valid=False
-        return is_valid
+        if email=="":
+	   return True
+	else:
+	   return self.EMAIL_RE.match(email)
 

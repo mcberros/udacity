@@ -30,8 +30,12 @@ class SignUpHandler(render.Handler):
 	
 	validator=validator.Validator()
 
-	def render_front(self, username="", password="", verify="", error_username="", error_password="", error_v_password="", email="", error_email=""):
-            self.render("form_signup.html", username=username, password=password, verify=verify, error_username=error_username, error_password=error_password, error_v_password=error_v_password, email=email, error_email=error_email)
+	def set_secure_cookie(self,name, val):
+    	    cookie_val = hash_cookie.make_secure_val(val)
+    	    self.response.headers.add_header('Set-Cookie','%s=%s; Path=/' % (name, cookie_val))
+
+	def render_front(self, username="", password="", verify="", error_username="", error_password="", error_verify="", email="", error_email=""):
+            self.render("form_signup.html", username=username, password=password, verify=verify, error_username=error_username, error_password=error_password, error_verify=error_verify, email=email, error_email=error_email)
 
 	def get(self):
 	    self.render_front()
@@ -42,7 +46,7 @@ class SignUpHandler(render.Handler):
             in_password=self.request.get('password')
             in_verify=self.request.get('verify')
 	    in_email=self.request.get('email')
-	    err_msg={'error_username':"",'error_password':"",'error_v_password':"",'error_email':""}
+	    err_msg={'error_username':"",'error_password':"",'error_verify':"",'error_email':""}
 	
 	    is_valid_username=self.validator.valid_username(in_username)
 
@@ -60,30 +64,29 @@ class SignUpHandler(render.Handler):
 		err_msg['error_password']=self.validator.MSG_ERR_PWD
 	    else:
 		if (not is_valid_match_pwd):
-		   err_msg['error_v_password']=self.validator.MSG_ERR_V_PWD
+		   err_msg['error_verify']=self.validator.MSG_ERR_V_PWD
 
 	    is_valid_email=self.validator.valid_email(in_email)
 	    if (not is_valid_email):
 		err_msg['error_email']=self.validator.MSG_ERR_EMAIL
 
-	    if err_msg['error_username']=="" and err_msg['error_password']=="" and err_msg['error_v_password']=="" and err_msg['error_email']=="":
+	    if err_msg['error_username']=="" and err_msg['error_password']=="" and err_msg['error_verify']=="" and err_msg['error_email']=="":
 		password_hash=salt.make_pw_hash(in_username, in_password)
 		u=user.User(username=in_username, password=password_hash.split(",")[0], salt=password_hash.split(",")[1])
                 u.put()
-		new_cookie_val = hash_cookie.make_secure_val(str(in_username))
-		self.response.headers.add_header('Set-Cookie','user_id=%s; Path=/' % new_cookie_val)
+		self.set_secure_cookie('valid',str(in_username))
                 self.redirect("/blog/welcome")
 	    else:
-		self.render_front(in_username,"","",err_msg['error_username'],err_msg['error_password'],err_msg['error_v_password'],in_email,err_msg['error_email'])
+		self.render_front(in_username,"","",err_msg['error_username'],err_msg['error_password'],err_msg['error_verify'],in_email,err_msg['error_email'])
 
 
 class WelcomeHandler(render.Handler):
 	def get(self):
-            username=self.request.cookies.get('user_id')
-	    if username:
-               cookie_val=hash_cookie.check_secure_val(username)
+            cookie_val=self.request.cookies.get('valid')
+	    if cookie_val:
+               username=hash_cookie.check_secure_val(cookie_val)
                if cookie_val:
-		  self.render("welcome.html",username=cookie_val)
+		  self.render("welcome.html", username=username)
 	       else:
 		  self.redirect("/blog/signup")
 
