@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 import re
+import salt
 from google.appengine.ext import db
 
 #Clase para validar las entradas del Form
@@ -42,18 +43,21 @@ class Validator:
 	   exist=True
         return exist
 
-    def valid_password(self,password=""):
+    def valid_sign_password(self,password=""):
         is_valid=True
         if not self.PWD_RE.match(password):
            is_valid=False
         return is_valid
+
+    def valid_bbdd_password(self,username,password):
+        user=db.GqlQuery("SELECT * FROM User WHERE username=:1",username).get()
+	return salt.valid_pw(username, password, user.password+","+user.salt)   
 
     def valid_match_pwd(self,password="",verify=""):
         is_valid=True
         if password!=verify:
            is_valid=False
         return is_valid
-
 
     def valid_email(self,email=""):
         if email=="":

@@ -26,13 +26,14 @@ from google.appengine.ext import db
 
 #Clases del flujo de navegacion
 
+
 class SignUpHandler(render.Handler):
 	
 	validator=validator.Validator()
 
 	def set_secure_cookie(self,name, val):
-    	    cookie_val = hash_cookie.make_secure_val(val)
-    	    self.response.headers.add_header('Set-Cookie','%s=%s; Path=/' % (name, cookie_val))
+            cookie_val = hash_cookie.make_secure_val(val)
+            self.response.headers.add_header('Set-Cookie','%s=%s; Path=/' % (name, cookie_val))
 
 	def render_front(self, username="", password="", verify="", error_username="", error_password="", error_verify="", email="", error_email=""):
             self.render("form_signup.html", username=username, password=password, verify=verify, error_username=error_username, error_password=error_password, error_verify=error_verify, email=email, error_email=error_email)
@@ -57,7 +58,7 @@ class SignUpHandler(render.Handler):
 		if exist_user:
 		   err_msg['error_username']=self.validator.MSG_EXIST_USER
 
-	    is_valid_password=self.validator.valid_password(in_password)
+	    is_valid_password=self.validator.valid_sign_password(in_password)
 	    is_valid_match_pwd=self.validator.valid_match_pwd(in_password,in_verify)
 
 	    if (not is_valid_password):
@@ -99,5 +100,40 @@ class UsersHandler(render.Handler):
         def get(self):
 	    self.render_front()
 
+class LoginHandler(render.Handler):
 
-app = webapp2.WSGIApplication([('/blog/signup',SignUpHandler),('/blog/welcome',WelcomeHandler),('/blog/users',UsersHandler)], debug=True)
+	validator=validator.Validator()
+
+	def set_secure_cookie(self,name, val):
+            cookie_val = hash_cookie.make_secure_val(val)
+            self.response.headers.add_header('Set-Cookie','%s=%s; Path=/' % (name, cookie_val))
+
+        def render_front(self, username="", password="", error_login=""):
+            self.render("form_login.html", username=username, password=password, error_login=error_login)
+
+	def get(self):
+	    self.render_front()
+
+        def post(self):
+            in_username=self.request.get('username')
+            in_password=self.request.get('password')
+            error_login="Invalid login"
+
+            if self.validator.exist_username(in_username) and self.validator.valid_bbdd_password(in_username,in_password):
+                self.set_secure_cookie('valid',str(in_username))
+                self.redirect("/blog/welcome")
+            else:
+                self.render_front(in_username,"",error_login)
+
+class LogoutHandler(render.Handler):
+
+	def empty_cookie(self,name):
+            self.response.headers.add_header('Set-Cookie','%s=%s; Path=/' % (name, ""))
+
+        def get(self):
+	    self.empty_cookie('valid')
+	    self.redirect("/blog/signup")
+
+
+
+app = webapp2.WSGIApplication([('/blog/signup',SignUpHandler),('/blog/welcome',WelcomeHandler),('/blog/users',UsersHandler),('/blog/login',LoginHandler),('/blog/logout',LogoutHandler)], debug=True)

@@ -21,6 +21,12 @@ handlers:
 - url: /blog/signup
   script: signup.app
 
+- url: /blog/login
+  script: signup.app
+
+- url: /blog/logout
+  script: signup.app
+
 - url: /blog/welcome
   script: signup.app
 
