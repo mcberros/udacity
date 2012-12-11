@@ -18,6 +18,9 @@ handlers:
 - url: /blog
   script: blog.app
 
+- url: /blog/.json
+  script: blog.app
+
 - url: /blog/signup
   script: signup.app
 

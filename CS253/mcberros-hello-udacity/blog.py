@@ -17,6 +17,8 @@
 import os
 import webapp2
 import jinja2
+import json
+from datetime import datetime
 
 from google.appengine.ext import db
 
@@ -83,5 +85,31 @@ class PermalinkHandler(Handler):
 	result=uri_permalink.replace("/blog/","")
 	self.render_front(result)
 
+class JsonHandler(webapp2.RequestHandler):
 
-app = webapp2.WSGIApplication([('/blog', BlogHandler), ('/blog/newpost', NewPostHandler), (r'/blog/[0-9]+', PermalinkHandler)], debug=True)
+    def get(self):
+	entries=db.GqlQuery("SELECT * FROM Blog ORDER BY last_modified DESC limit 10")
+	self.response.headers['Content-Type']='application/json;charset=UTF-8' 	
+	list_entries=[]
+	date_format="%a %b %d %H:%M:%S %Y"
+	for entry in entries:
+	    list_entries.append(dict([('subject', entry.subject), ('content', entry.content), ('created', entry.created.strftime(date_format)),('last_modified',entry.last_modified.strftime(date_format))]))
+	blog_json=json.dumps(list_entries)
+	self.response.out.write(blog_json)
+
+class PermalinkJsonHandler(webapp2.RequestHandler):
+
+    def get(self):
+	uri_permalink=self.request.path_info
+        entry_id=uri_permalink.replace("/blog/","")
+	entry_id=entry_id.replace(".json","")
+	entry=Blog.get_by_id(long(entry_id))
+        self.response.headers['Content-Type']='application/json;charset=UTF-8'
+        date_format="%a %b %d %H:%M:%S %Y"
+        dict_entry=dict([('subject', entry.subject), ('content', entry.content), ('created', entry.created.strftime(date_format)),('last_modified',entry.last_modified.strftime(date_format))])
+        entry_json=json.dumps(dict_entry)
+        self.response.out.write(entry_json)
+
+
+
+app = webapp2.WSGIApplication([('/blog', BlogHandler), ('/blog/newpost', NewPostHandler), (r'/blog/[0-9]+', PermalinkHandler),('/blog/.json',JsonHandler),(r'/blog/[0-9]+'+'.json', PermalinkJsonHandler)], debug=True)
