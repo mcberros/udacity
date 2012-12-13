@@ -20,6 +20,7 @@ import jinja2
 import urllib2
 from xml.dom import minidom
 
+from google.appengine.api import memcache
 from google.appengine.ext import db
 
 template_dir=os.path.join(os.path.dirname(__file__), 'templates')
@@ -69,22 +70,29 @@ class Art(db.Model):
     created=db.DateTimeProperty(auto_now_add = True)
     coords=db.GeoPtProperty()
 
+
+def top_arts(update=False):
+    key='top'
+    arts=memcache.get(key)
+    if arts is None or update:
+    	arts=db.GqlQuery("SELECT * FROM Art ORDER BY created DESC LIMIT 10")
+    	arts=list(arts)
+	memcache.set(key,arts)
+    return arts
+
+
 class ArtHandler(Handler):
     def render_front(self, title="", art="", error=""):
-	arts=db.GqlQuery("SELECT * FROM Art ORDER BY created DESC LIMIT 10")
-	arts=list(arts)
+	arts=top_arts()
 	points=[]
+	img_url=None
+
 	for a in arts:
 	    if a.coords:
 	       points.append(a.coords)
 
 	#find which arts have coords
 	points=filter(None,(a.coords for a in arts))
-	if points:
-	   img_url=gmaps_img(points)
-
-	# if we have any arts coords, make an image url
-	img_url=None
 	if points:
 	   img_url=gmaps_img(points)
 
@@ -104,6 +112,7 @@ class ArtHandler(Handler):
 	      a.coords=coords
 
 	   a.put()
+	   top_arts(True)
 	   self.redirect("/art")
 	else:
 	   error="we need both a title and an art"

@@ -14,15 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#import webapp2
 import hmac
-
-#import render
-#import validator
-#import user
-#import salt
-#from google.appengine.ext import db
-
 
 #Funciones para el Hash de las cookies
 

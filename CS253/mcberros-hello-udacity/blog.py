@@ -18,8 +18,10 @@ import os
 import webapp2
 import jinja2
 import json
+import time
 from datetime import datetime
 
+from google.appengine.api import memcache
 from google.appengine.ext import db
 
 template_dir=os.path.join(os.path.dirname(__file__), 'templates')
@@ -37,15 +39,46 @@ class Handler(webapp2.RequestHandler):
 	self.write(self.render_str(template, **kw))
 
 class Blog(db.Model):
+    uri=db.StringProperty()
     subject=db.StringProperty(required = True)
     content=db.TextProperty(required = True)
     created=db.DateTimeProperty(auto_now_add = True)
     last_modified=db.DateTimeProperty(auto_now = True)
 
+def top_posts(update=False):
+    key_entries='top'
+    key_time='time_cache'
+    cache_time=memcache.get(key_time)
+    entries=memcache.get(key_entries)
+    if (entries == None) or (cache_time == None) or update:
+        entries=db.GqlQuery("SELECT * FROM Blog ORDER BY last_modified DESC limit 10")
+        entries=list(entries)
+	cache_time=time.time()
+        memcache.set(key_entries,entries)
+	memcache.set(key_time,cache_time)
+    return entries,cache_time
+
+def permalink_post(uri_permalink,update=False):
+    key_permalink=uri_permalink
+    id_permalink=uri_permalink.replace("/blog/","")
+    key_time='time_cache'+id_permalink
+    cache_time=memcache.get(key_time)
+    entry_permalink=memcache.get(key_permalink)
+    if (entry_permalink == None) or (cache_time == None) or update:
+	entry_permalink=Blog.get_by_id(long(id_permalink))
+        cache_time=time.time()
+        memcache.set(key_permalink,entry_permalink)
+        memcache.set(key_time,cache_time)
+    return entry_permalink,cache_time
+
+
+
 class BlogHandler(Handler):
     def render_front(self):
-	entries=db.GqlQuery("SELECT * FROM Blog ORDER BY last_modified DESC limit 10")
-	self.render("front_blog.html", entries=entries)
+	entries,cache_time=top_posts()
+	now = time.time()
+	difference = int(now - cache_time)
+	self.render("front_blog.html", entries=entries,time=difference)
 
     def get(self):
 	self.render_front()
@@ -65,9 +98,15 @@ class NewPostHandler(Handler):
         if subject and content:
            c=Blog(subject=subject, content=content)
            c.put()
+	   top_posts(True)
 	   id_entry=c.key()
 	   str_id_key=str(id_entry.id())
-           self.redirect("/blog/"+str_id_key)
+	   uri="/blog/"+str_id_key
+	   c.uri=uri
+	   c.put()
+	   top_posts(True)
+           permalink_post(uri,True)
+           self.redirect(uri)
         else:
            error="we need both a subject and a content"
            self.render_front(subject, content, error)
@@ -75,15 +114,16 @@ class NewPostHandler(Handler):
 
 class PermalinkHandler(Handler):
 
-     def render_front(self, entry_id):
-	entry=Blog.get_by_id(long(entry_id))
-        self.render("permalink_blog.html", entry=entry)
+     def render_front(self, uri):
+	entry,cache_time=permalink_post(uri)
+        now = time.time()
+        difference = int(now - cache_time)
+        self.render("permalink_blog.html", entry=entry,time=difference)
 
 
      def get(self):
 	uri_permalink=self.request.path_info
-	result=uri_permalink.replace("/blog/","")
-	self.render_front(result)
+	self.render_front(uri_permalink)
 
 class JsonHandler(webapp2.RequestHandler):
 
@@ -110,6 +150,12 @@ class PermalinkJsonHandler(webapp2.RequestHandler):
         entry_json=json.dumps(dict_entry)
         self.response.out.write(entry_json)
 
+class FlushHandler(webapp2.RequestHandler):
+    def get(self):
+	memcache.flush_all()	
+	self.redirect('/blog')
 
 
-app = webapp2.WSGIApplication([('/blog', BlogHandler), ('/blog/newpost', NewPostHandler), (r'/blog/[0-9]+', PermalinkHandler),('/blog/.json',JsonHandler),(r'/blog/[0-9]+'+'.json', PermalinkJsonHandler)], debug=True)
+
+
+app = webapp2.WSGIApplication([('/blog', BlogHandler), ('/blog/newpost', NewPostHandler), (r'/blog/[0-9]+', PermalinkHandler),('/blog/.json',JsonHandler),(r'/blog/[0-9]+'+'.json', PermalinkJsonHandler),('/blog/flush',FlushHandler)], debug=True)
