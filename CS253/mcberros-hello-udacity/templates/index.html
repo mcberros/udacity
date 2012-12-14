@@ -1,83 +1,22 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>/ascii/</title>
+        <title>CS253</title>
     </head>
 
-    <style type="text/css">
-	body {
-	  font-family: sans-serif;
-	  width: 800px;
-	  margin: 0 auto;
-	  padding: 10px;
-	}
-	
-	.error {
-	  color: red
-	}
-
-	label {
-	  display: block;
-	  font-size: 20px;
-	}
-
-	input[type=text] {
-	  width: 400px;
-	  font-size: 20px;
-	  padding: 2px;
-	}
-
-	textarea {
-	  width: 400px;
-	  height: 200px;
-	  font-size: 17px;
-	  font-family: monospace;
-	}
-
-	input[type=submit] {
-	  font-size: 24px;
-	}
-
-	hr {
-	  margin-top: 20px;
-	}
-
-	.art + .art {
-	  margin-top: 20px;
-	}
-
-	.art-title {
-	  font-weight: bold;
-	  font-size: 20px;
-	}
-
-	.art-body {
-	  margin: 0;
-	  font-size: 17px;
-	}
-    </style>
-
     <body>
-	<h1>/ascii/</h1>
-
-	<form method="post">
-		<label>
-			<div>title</div>
-			<input type="text" name="title" value="{{title}}">
-		</label>
-		<label>
-			<div>art</div>
-			<textarea name="art">{{art}}</textarea>
-		</label>
-		<div class="error">{{error}}</div>
-		<input type="submit">
-	</form>
-	<hr>
-	{% for a in arts %}
-	   <div class="art">
-		<div class="art-title">{{a.title}}</div>
-		<pre class="art-body">{{a.art}}</pre>
-	   </div>
-	{% endfor %}
+	<h1>CS253</h1>
+	<div class="href"><a href="/problem1/birthday">problem1</a></div>
+	<div class="href"><a href="/problem2">problem2 ROT13</a></div>
+	<div class="href"><a href="/problem2_2/signup">problem2 signup</a></div>
+	<div class="href"><a href="/art">asciichan</a></div>
+	<div class="href"><a href="/example_cookie">example cookie</a></div>
+	<div class="href"><a href="/blog">blog</a></div>
+	<div class="href"><a href="/blog/newpost">blog newpost</a></div>
+	<div class="href"><a href="/blog/signup">blog signup</a></div>
+	<div class="href"><a href="/blog/login">blog login</a></div>
+	<div class="href"><a href="/blog/users">blog users</a></div>
+	<div class="href"><a href="/blog/.json">blog json</a></div>
+	<div class="href"><a href="/blog/flush">blog flush cache</a></div>
     </body>
 </html>

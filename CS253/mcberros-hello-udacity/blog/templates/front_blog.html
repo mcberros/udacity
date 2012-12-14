@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CS 253 Blog</title>
+    </head>
+
+    <body>
+	<h1>CS 253 Blog</h1>
+	<a href="/blog/login">login</a>
+	<a href="/blog/signup">signup</a>
+	{% for entry in entries %}
+	   <div class="entry">
+		<div class="subject"><a href={{entry.uri}}>{{entry.subject}}</a></div>
+		<div class="created">{{entry.last_modified.strftime('%b %d, %Y')}}</div>
+		<hr>
+		<pre class="content">{{entry.content}}</pre>
+	   </div>
+	{% endfor %}
+	<div class="time"><label>Queried {{time}} seconds ago</label></div>
+    </body>
+</html>

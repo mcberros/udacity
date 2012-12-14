@@ -12,41 +12,44 @@ handlers:
 - url: /
   script: main.app
 
+- url: /problem2
+  script: problem2.problem2.app
+
+- url: /example_cookie
+  script: example_cookie.example_cookie.app
+
 - url: /art
-  script: art.app
+  script: art.art.app
 
 - url: /blog
-  script: blog.app
+  script: blog.blog.app
 
 - url: /blog/.json
-  script: blog.app
+  script: blog.blog.app
 
 - url: /blog/signup
-  script: signup.app
+  script: blog.signup.app
 
 - url: /blog/login
-  script: signup.app
+  script: blog.signup.app
 
 - url: /blog/logout
-  script: signup.app
+  script: blog.signup.app
 
 - url: /blog/welcome
-  script: signup.app
+  script: blog.signup.app
 
 - url: /blog/users
-  script: signup.app
+  script: blog.signup.app
 
 - url: /blog/.*
-  script: blog.app
+  script: blog.blog.app
 
 - url: /problem1/.*
-  script: problem1.app
-
-- url: /problem2/.*
-  script: problem2.app
+  script: problem1.problem1.app
 
 - url: /problem2_2/.*
-  script: problem2_2.app
+  script: problem2.problem2_2.app
 
 libraries:
 - name: webapp2

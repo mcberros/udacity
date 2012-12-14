@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CS 253 Blog</title>
+    </head>
+
+    <body>
+	<h1>CS 253 Login</h1>
+
+	<form method="post">
+		<label>
+			<div>Username</div>
+			<input type="text" name="username" value={{username}}>
+		</label>
+		<label>
+			<div>Password</div>
+			<input type="password" name="password" value="">
+		</label>
+		<div style="color: red"> {{error_login}} </div>
+		<div><input type="submit"></div>
+	</form>
+    </body>
+</html>
