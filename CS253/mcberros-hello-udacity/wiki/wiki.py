@@ -29,19 +29,76 @@ import hash_cookie
 from google.appengine.ext import db
 
 template_dir=os.path.join(os.path.dirname(__file__), 'templates')
-jinja_env=jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape =True)
+jinja_env=jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=False)
 
-PAGE_RE = r'(/(?:[a-zA-Z0-9_-]+/?)*)'
+PAGE_RE = r'/?(?:[a-zA-Z0-9_-]+/?)*'
 DOCUMENT_ROOT='/wiki'
 
 
 class ViewHandler(render.Handler):
-    def render_front(self):
-        entry=wiki_post.get_post()
-        self.render("view_login.html", entry=entry)
 
     def get(self):
-	self.render_front()
+	#Tenemos que comprobar si existe cookie con usuario
+	# Si no existe cookie con usuario debemos redirigir a view_login.html
+	# Si existe cookie de usuario debemos redirigir a view_user.html
+	#En ambos casos hay que ver la URI para ver el post y dar una vista de su contenido
+	# Por tanto, primero buscamos el contenido asociado a esa URI
+	uri_post=self.request.path_info
+	entry=db.GqlQuery("SELECT * FROM WikiPost WHERE uri=:1 ORDER BY created DESC limit 1",uri_post).get()
+	cookie_val=self.request.cookies.get('valid')
+	if not cookie_val:
+	   self.render("view_login.html",entry=entry)
+	else:
+	   uri_edit=DOCUMENT_ROOT+"/_edit"+uri_post.replace(DOCUMENT_ROOT,"")
+	   if entry:	
+              username=hash_cookie.check_secure_val(cookie_val)
+              self.render("view_user.html", uri=uri_edit,username=username, entry=entry)
+	   else:
+	      self.redirect(uri_edit)
+
+class HistoryHandler(render.Handler):
+
+	def get(self)
+   	    uri_post=self.request.path_info
+            entries=db.GqlQuery("SELECT * FROM WikiPost WHERE uri=:1 ORDER BY created DESC",uri_post)
+	    cookie_val=self.request.cookies.get('valid')
+            if not cookie_val:
+               self.render("history_view.html",entries=entries)
+            else:
+	       uri_edit=DOCUMENT_ROOT+"/_edit"+uri_post.replace(DOCUMENT_ROOT,"")
+               if entries:
+                  username=hash_cookie.check_secure_val(cookie_val)
+                  self.render("history_edit.html", uri=uri_edit,username=username, entries=entries)
+
+
+class EditHandler(render.Handler):
+
+        def get(self):
+	    uri_post=self.request.path_info
+            uri_post=uri_post.replace("/_edit","")
+            entry=db.GqlQuery("SELECT * FROM WikiPost WHERE uri=:1 ORDER BY created DESC limit 1",uri_post).get()
+	    cookie_val=self.request.cookies.get('valid')
+
+ 	    if not cookie_val:
+		self.render("view_login.html",entry=entry)
+	    else:
+		username=hash_cookie.check_secure_val(cookie_val)
+		if entry:
+                    self.render("edit.html", uri=uri_post,username=username, content=entry.content)
+		else:
+		    self.render("edit.html", uri=uri_post,username=username, content="") 
+
+
+	def post(self):
+	    uri_post=self.request.path_info
+	    uri_post=uri_post.replace("/_edit","")
+	    content=self.request.get("content")
+	    entry=wiki_post.WikiPost(uri=uri_post, content=content)
+            entry.put()
+	    cookie_val=self.request.cookies.get('valid')
+            if cookie_val:
+                username=hash_cookie.check_secure_val(cookie_val)
+                self.redirect(uri_post)
 
 
 class SignUpHandler(render.Handler):
@@ -92,7 +149,7 @@ class SignUpHandler(render.Handler):
                 u=user.User(username=in_username, password=password_hash.split(",")[0], salt=password_hash.split(",")[1])
                 u.put()
                 self.set_secure_cookie('valid',str(in_username))
-                self.redirect("/blog/welcome")
+		self.redirect(DOCUMENT_ROOT)
             else:
 		self.render_front(in_username,"","",err_msg['error_username'],err_msg['error_password'],err_msg['error_verify'],in_email,err_msg['error_email'])
 
@@ -131,15 +188,7 @@ class LogoutHandler(render.Handler):
             self.redirect(DOCUMENT_ROOT)
 
 
-class EditHandler(render.Handler):
-	def render_front(self):
-            self.render("edit.html",entry="mcberros")
-
-        def get(self):
-            self.render_front()
 
 
-
-
-app = webapp2.WSGIApplication([(DOCUMENT_ROOT, ViewHandler),(DOCUMENT_ROOT+'/_edit',EditHandler),(DOCUMENT_ROOT+'/signup',SignUpHandler),(DOCUMENT_ROOT+'/login',LoginHandler),(DOCUMENT_ROOT+'/logout',LogoutHandler)], debug=True)
+app = webapp2.WSGIApplication([(DOCUMENT_ROOT+'/signup',SignUpHandler),(DOCUMENT_ROOT+'/login',LoginHandler),(DOCUMENT_ROOT+'/logout',LogoutHandler),(DOCUMENT_ROOT+'/_edit' + PAGE_RE, EditHandler),(DOCUMENT_ROOT+'/_history'+PAGE_RE,HistoryHandler),(DOCUMENT_ROOT+PAGE_RE, ViewHandler)], debug=True)
 

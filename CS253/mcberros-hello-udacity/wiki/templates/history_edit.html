@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CS 253 Wiki</title>
+    </head>
+
+    <body>
+        <h1>CS 253 Wiki</h1>
+  	   <div class="options">
+		<a href={{uri_edit}}>edit</a>	
+		<a href={{uri_view}}>view</a>
+	   </div>
+	   <div class="login">
+        	<a href="/wiki/logout">{{username}}(logout)</a>
+	   </div>
+	   {% for entry in entries %}
+           <div class="entry">
+                <div class="created">{{entry.last_modified.strftime('%b %d, %Y')}}</div>
+                <div class="content">{{entry.content}}</div>
+		<div class="options">
+                	<a href={{entry.uri_view}}>edit</a>
+                	<a href={{entry.uri_edit}}>view</a>
+           	</div>
+           </div>
+           {% endfor %}
+    </body>
+</html>
+
