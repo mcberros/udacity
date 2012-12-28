@@ -44,31 +44,41 @@ class ViewHandler(render.Handler):
 	#En ambos casos hay que ver la URI para ver el post y dar una vista de su contenido
 	# Por tanto, primero buscamos el contenido asociado a esa URI
 	uri_post=self.request.path_info
-	entry=db.GqlQuery("SELECT * FROM WikiPost WHERE uri=:1 ORDER BY created DESC limit 1",uri_post).get()
-	cookie_val=self.request.cookies.get('valid')
-	if not cookie_val:
-	   self.render("view_login.html",entry=entry)
+	uri_history=DOCUMENT_ROOT+"/_history"+uri_post.replace(DOCUMENT_ROOT,"")
+
+        param=self.request.get('v')
+        if not param:
+	   entry=db.GqlQuery("SELECT * FROM WikiPost WHERE uri=:1 ORDER BY created DESC limit 1",uri_post).get()
 	else:
-	   uri_edit=DOCUMENT_ROOT+"/_edit"+uri_post.replace(DOCUMENT_ROOT,"")
+	   entry=wiki_post.WikiPost.get_by_id(int(param))
+
+	cookie_val=self.request.cookies.get('valid')
+        if not cookie_val:
+	   self.render("view_login.html", uri_history=uri_history, entry=entry)
+	else:
+	   uri_edit=uri_history.replace("/_history","/_edit")
 	   if entry:	
               username=hash_cookie.check_secure_val(cookie_val)
-              self.render("view_user.html", uri=uri_edit,username=username, entry=entry)
+              self.render("view_user.html", uri_edit=uri_edit, uri_history=uri_history, username=username, entry=entry)
 	   else:
 	      self.redirect(uri_edit)
+ 
+
 
 class HistoryHandler(render.Handler):
 
-	def get(self)
+	def get(self):
    	    uri_post=self.request.path_info
+	    uri_post=uri_post.replace("/_history","")
             entries=db.GqlQuery("SELECT * FROM WikiPost WHERE uri=:1 ORDER BY created DESC",uri_post)
 	    cookie_val=self.request.cookies.get('valid')
-            if not cookie_val:
-               self.render("history_view.html",entries=entries)
-            else:
-	       uri_edit=DOCUMENT_ROOT+"/_edit"+uri_post.replace(DOCUMENT_ROOT,"")
-               if entries:
+	    if entries:
+               if not cookie_val:
+                  self.render("history_view.html",entries=entries)
+               else:
+		  uri_edit=DOCUMENT_ROOT+"/_edit"+uri_post.replace(DOCUMENT_ROOT,"")
                   username=hash_cookie.check_secure_val(cookie_val)
-                  self.render("history_edit.html", uri=uri_edit,username=username, entries=entries)
+                  self.render("history_edit.html", uri_edit=uri_edit, uri_view=uri_post, username=username, entries=entries)
 
 
 class EditHandler(render.Handler):
@@ -76,7 +86,12 @@ class EditHandler(render.Handler):
         def get(self):
 	    uri_post=self.request.path_info
             uri_post=uri_post.replace("/_edit","")
-            entry=db.GqlQuery("SELECT * FROM WikiPost WHERE uri=:1 ORDER BY created DESC limit 1",uri_post).get()
+	    param=self.request.get('v')
+            if not param:
+	       entry=db.GqlQuery("SELECT * FROM WikiPost WHERE uri=:1 ORDER BY created DESC limit 1",uri_post).get()
+            else:
+                entry=wiki_post.WikiPost.get_by_id(int(param))
+
 	    cookie_val=self.request.cookies.get('valid')
 
  	    if not cookie_val:
@@ -90,11 +105,16 @@ class EditHandler(render.Handler):
 
 
 	def post(self):
-	    uri_post=self.request.path_info
-	    uri_post=uri_post.replace("/_edit","")
+	    uri_edit=self.request.path_info
+	    uri_post=uri_edit.replace("/_edit","")
 	    content=self.request.get("content")
 	    entry=wiki_post.WikiPost(uri=uri_post, content=content)
             entry.put()
+            entry.id=entry.key().id()
+	    entry.uri_history_view=uri_post+"?v="+str(entry.key().id())
+	    entry.uri_history_edit=uri_edit+"?v="+str(entry.key().id())
+            entry.put()
+
 	    cookie_val=self.request.cookies.get('valid')
             if cookie_val:
                 username=hash_cookie.check_secure_val(cookie_val)
