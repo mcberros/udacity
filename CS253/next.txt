@@ -1,0 +1,8 @@
+CSS
+Clean Code
+Cache in Wiki
+Herencia en templates: Reducir templates
+Automatizar subidas: Stop, start, limpiar BBDD, guardar en Git, deploy en App Engine
+Eliminar de Wiki_post la uri_edit y la uri_history: Calcular antes de enviar a template y no guardar en BBDD
+Como quitar document_root de la BBDD en Blog y Wiki
+Mejor división en módulos.
