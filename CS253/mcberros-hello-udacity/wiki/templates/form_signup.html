@@ -1,34 +1,23 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>CS 253 Wiki</title>
-    </head>
+{% extends "form_user_base.html" %}
 
-    <body>
-	<h1>CS 253 Signup</h1>
+{% block error_username %}
+  <span style="color: red"> {{error_username}} </span>
+{% endblock %}
 
-	<form method="post">
-		<label>
-			<div>Username</div>
-			<input type="text" name="username" value={{username}}>
-			<span style="color: red"> {{error_username}} </span>
-		</label>
-		<label>
-			<div>Password</div>
-			<input type="password" name="password" value="">
-                        <span style="color: red"> {{error_password}} </span>
-		</label>
-		<label>
-                        <div>Verify Password</div>
-                        <input type="password" name="verify" value="">
-                        <span style="color: red"> {{error_verify}} </span>
-                </label>
-		<label>
-                        <div>Email (optional)</div>
-                        <input type="text" name="email" value={{email}}>
-                        <span style="color: red"> {{error_email}} </span>
-                </label>
-		<div><input type="submit"></div>
-	</form>
-    </body>
-</html>
+{% block error_password %}
+  <span style="color: red"> {{error_password}} </span>
+{% endblock %}
+
+
+{% block error_verify_password_email %}
+  <label>
+    <div>Verify Password</div>
+    <input type="password" name="verify" value="">
+    <span style="color: red"> {{error_verify}} </span>
+  </label>
+  <label>
+    <div>Email (optional)</div>
+    <input type="text" name="email" value={{email}}>
+    <span style="color: red"> {{error_email}} </span>
+  </label>
+{% endblock %}

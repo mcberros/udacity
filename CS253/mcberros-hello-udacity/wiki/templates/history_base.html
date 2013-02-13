@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CS 253 Wiki</title>
+  </head>
+
+  <body>
+    <h1>CS 253 Wiki</h1>
+    <div class="options">
+      {% block options %}{% endblock %}
+    </div>
+    <div class="login">
+      {% block login %}{% endblock %}
+    </div>
+
+    {% block entries %}{% endblock %}  
+  </body>
+</html>
+

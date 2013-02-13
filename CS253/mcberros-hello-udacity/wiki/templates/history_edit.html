@@ -1,28 +1,23 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>CS 253 Wiki</title>
-    </head>
+{% extends "history_base.html" %}
 
-    <body>
-        <h1>CS 253 Wiki</h1>
-  	   <div class="options">
-		<a href={{uri_edit}}>edit</a>	
-		<a href={{uri_view}}>view</a>
-	   </div>
-	   <div class="login">
-        	<a href="/wiki/logout">{{username}}(logout)</a>
-	   </div>
-	   {% for entry in entries %}
-           <div class="entry">
-                <div class="created">{{entry.created.strftime('%b %d, %Y')}}</div>
-                <div class="content">{{entry.content}}</div>
-		<div class="opciones">
-			<a href={{entry.uri_history_view}}>view</a>
-			<a href={{entry.uri_history_edit}}>edit</a>
-		</div>
-           </div>
-           {% endfor %}
-    </body>
-</html>
+{% block options %}
+  <a href={{uri_edit}}>edit</a>	
+  <a href={{uri_view}}>view</a>
+{% endblock %}
 
+{% block login %}
+  <a href="/wiki/logout">{{username}}(logout)</a>
+{% endblock %}
+
+{% block entries %}
+  {% for entry in entries %}
+    <div class="entry">
+      <div class="created">{{entry.created.strftime('%b %d, %Y')}}</div>
+      <div class="content">{{entry.content}}</div>
+      <div class="opciones">
+        <a href={{entry.uri_history_view}}>view</a>
+        <a href={{entry.uri_history_edit}}>edit</a>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

@@ -1,20 +1,7 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>CS 253 Wiki</title>
-    </head>
+{% extends "view_base.html" %}
 
-    <body>
-        <h1>CS 253 Wiki</h1>
-  	   <div class="options">
-		<a href={{uri_history}}>history</a>
-	   </div>
-	   <div class="login">
-        	<a href="/wiki/login">login</a>
-        	<a href="/wiki/signup">signup</a>
-	   </div>
-           <div class="entry">
-                {{entry.content|safe}}
-           </div>
-    </body>
-</html>
+{% block login %}
+  <a href="/wiki/login">login</a>
+  <a href="/wiki/signup">signup</a>
+{% endblock %}
+   

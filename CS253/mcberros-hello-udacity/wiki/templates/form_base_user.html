@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CS 253 Wiki</title>
+  </head>
+
+  <body>
+    <h1>CS 253 Signup</h1>
+
+    <form method="post">
+      <label>
+        <div>Username</div>
+        <input type="text" name="username" value={{username}}>
+        {% block error_username %}{% endblock %}
+      </label>
+      <label>
+        <div>Password</div>
+        <input type="password" name="password" value="">
+        {% block error_password %}{% endblock %}
+      </label>
+      {% block error_verify_password_email %}{% endblock %}
+      {% block error_login %}{% endblock %}
+      <div><input type="submit"></div>
+    </form>
+  </body>
+</html>
