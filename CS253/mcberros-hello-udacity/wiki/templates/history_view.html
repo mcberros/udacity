@@ -1,12 +1,14 @@
 {% extends "history_base.html" %}
 
-{% block login %}
+{% block login_history %}
   <a href="/wiki/login">login</a>
   <a href="/wiki/signup">signup</a>
 {% endblock %}
 
 {% block entries %}
+<ul>
   {% for entry in entries %}
+  <li>
     <div class="entry">
       <div class="created">{{entry.created.strftime('%b %d, %Y')}}</div>
       <div class="content">{{entry.content}}</div>
@@ -14,5 +16,8 @@
         <a href={{entry.uri_history_view}}>view</a>
       </div>
     </div>
+    <hr />
+  </li>
   {% endfor %}
+</ul>
 {% endblock %}

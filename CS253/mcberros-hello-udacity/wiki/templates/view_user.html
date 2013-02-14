@@ -1,8 +1,9 @@
 {% extends "view_base.html" %}
+
 {% block edit %}
   <a href={{uri_edit}}>edit</a>	
 {% endblock %}
     
-{% block login %}
+{% block login_view %}
   <a href="/wiki/logout">{{username}}(logout)</a>
 {% endblock %}

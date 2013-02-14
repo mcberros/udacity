@@ -1,19 +1,13 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>CS 253 Wiki</title>
-  </head>
+{% extends "base.html" %}
 
-  <body>
-    <h1>CS 253 Wiki</h1>
-    <div class="options">
-      {% block options %}{% endblock %}
-    </div>
-    <div class="login">
-      {% block login %}{% endblock %}
-    </div>
+{% block options %} 
+  <div class="options">
+    {% block options_history %}{% endblock %}
+  </div>
+{% endblock %}
 
-    {% block entries %}{% endblock %}  
-  </body>
-</html>
-
+{% block login %} 
+  <div class="login">
+    {% block login_history %}{% endblock %}
+  </div>
+{% endblock %}

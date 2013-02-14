@@ -1,11 +1,11 @@
 {% extends "history_base.html" %}
 
-{% block options %}
+{% block options_history %}
   <a href={{uri_edit}}>edit</a>	
   <a href={{uri_view}}>view</a>
 {% endblock %}
 
-{% block login %}
+{% block login_history %}
   <a href="/wiki/logout">{{username}}(logout)</a>
 {% endblock %}
 
@@ -19,5 +19,6 @@
         <a href={{entry.uri_history_edit}}>edit</a>
       </div>
     </div>
+    <hr />
   {% endfor %}
 {% endblock %}
