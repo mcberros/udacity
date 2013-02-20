@@ -10,15 +10,16 @@
 {% endblock %}
 
 {% block entries %}
-  {% for entry in entries %}
-    <div class="entry">
-      <div class="created">{{entry.created.strftime('%b %d, %Y')}}</div>
-      <div class="content">{{entry.content}}</div>
-      <div class="opciones">
-        <a href={{entry.uri_history_view}}>view</a>
-        <a href={{entry.uri_history_edit}}>edit</a>
-      </div>
-    </div>
-    <hr />
-  {% endfor %}
+  <table>
+    {% for entry in entries %}
+      <tr class="entry">
+        <th class="created">{{entry.created.strftime('%b %d, %Y')}}</th>
+        <td class="content">{{entry.content}}</td>
+        <td class="opciones">
+          <a href={{entry.uri_history_view}}>view</a>
+          <a href={{entry.uri_history_edit}}>edit</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
 {% endblock %}

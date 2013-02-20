@@ -1,23 +1,22 @@
 {% extends "history_base.html" %}
 
+{% block options_history %}
+  <a href={{uri_view}}>view</a>
+{% endblock %}
+
 {% block login_history %}
   <a href="/wiki/login">login</a>
   <a href="/wiki/signup">signup</a>
 {% endblock %}
 
 {% block entries %}
-<ul>
+<table>
   {% for entry in entries %}
-  <li>
-    <div class="entry">
-      <div class="created">{{entry.created.strftime('%b %d, %Y')}}</div>
-      <div class="content">{{entry.content}}</div>
-      <div class="opciones">
-        <a href={{entry.uri_history_view}}>view</a>
-      </div>
-    </div>
-    <hr />
-  </li>
+    <tr class="entry">
+      <th class="created">{{entry.created.strftime('%b %d, %Y')}}<th>
+      <td class="content">{{entry.content}}</td>
+      <th class="opciones"><a href={{entry.uri_history_view}}>view</a><th>
+    </tr>
   {% endfor %}
-</ul>
+</table>
 {% endblock %}
