@@ -120,11 +120,13 @@ class SignUpHandler(render.Handler):
     cookie_val = hash_cookie.make_secure_val(val)
     self.response.headers.add_header('Set-Cookie','%s=%s; Path=/' % (name, cookie_val))
 
-  def render_front(self, username="", password="", verify="", error_username="", error_password="", error_verify="", email="", error_email=""):
-    self.render("form_signup.html", username=username, password=password, verify=verify, error_username=error_username, error_password=error_password, error_verify=error_verify, email=email, error_email=error_email)
+  def render_front(self, username="", password="", verify="", error_username="", error_password="", error_verify="", email="", error_email="", uri_view=""):
+    self.render("form_signup.html", username=username, password=password, verify=verify, error_username=error_username, error_password=error_password, error_verify=error_verify, email=email, error_email=error_email,uri_view=uri_view)
 
   def get(self):
-    self.render_front()
+    uri_wiki=self.request.path_info
+    uri_wiki=uri_wiki.replace("/signup","")
+    self.render_front(uri_view=uri_wiki)
 
   def post(self):
     in_username=self.request.get('username')
@@ -172,11 +174,13 @@ class LoginHandler(render.Handler):
     cookie_val = hash_cookie.make_secure_val(val)
     self.response.headers.add_header('Set-Cookie','%s=%s; Path=/' % (name, cookie_val))
 
-  def render_front(self, username="", password="", error_login=""):
-    self.render("form_login.html", username=username, password=password, error_login=error_login)
+  def render_front(self, username="", password="", error_login="", uri_view=""):
+    self.render("form_login.html", username=username, password=password, error_login=error_login, uri_view=uri_view)
 
   def get(self):
-    self.render_front()
+    uri_wiki=self.request.path_info
+    uri_wiki=uri_wiki.replace("/login","")
+    self.render_front(uri_view=uri_wiki)
 
   def post(self):
     in_username=self.request.get('username')

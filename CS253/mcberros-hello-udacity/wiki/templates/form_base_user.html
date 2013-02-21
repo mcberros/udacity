@@ -4,6 +4,12 @@
   CS 253 Signup
 {% endblock %}
 
+{% block options %}
+  <div class="options">
+    <a href={{uri_view}}>view</a>
+  </div>
+{% endblock %}
+
 {% block form %}
   <form method="post">
     <label>
@@ -18,7 +24,9 @@
     </label>
     {% block error_verify_password_email %}{% endblock %}
     {% block error_login %}{% endblock %}
-    <div><input type="submit"></div>
+    <div>
+      <input type="submit">
+    </div>
   </form>
 {% endblock %}
 
