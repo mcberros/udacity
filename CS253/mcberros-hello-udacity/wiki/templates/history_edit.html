@@ -12,8 +12,13 @@
 {% block entries %}
   <table>
     {% for entry in entries %}
-      <tr class="entry">
+      <tr>
         <th class="created">{{entry.created.strftime('%b %d, %Y')}}</th>
+        <th></th>
+        <th></th>
+      </tr>
+      <tr>
+        <th></th>
         <td class="content">{{entry.content}}</td>
         <td class="opciones">
           <a href={{entry.uri_history_view}}>view</a>
