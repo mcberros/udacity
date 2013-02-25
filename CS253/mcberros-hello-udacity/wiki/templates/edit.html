@@ -1,16 +1,12 @@
 {% extends "base.html" %}
 
 {% block options %}
-  <div class="options">
-    <a href={{uri}}>view</a>
-    <a href="/wiki/_history">history</a>
-  </div>
+  <a href={{uri}}>view</a>
+  <a href="/wiki/_history">history</a>
 {% endblock %}
 
 {% block login %} 
-  <div class="login">
-    <a href="/wiki/logout">{{username}}(logout)</a>
-  </div>
+  <a href="/wiki/logout">{{username}}(logout)</a>
 {% endblock %}
 
 {% block form %} 

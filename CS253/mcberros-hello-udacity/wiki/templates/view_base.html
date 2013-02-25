@@ -1,16 +1,12 @@
 {% extends "base.html" %}
 
 {% block options %} 
-  <div class="options">
-    {% block edit %}{% endblock %}
-    <a href={{uri_history}}>history</a>
-  </div>
+  {% block edit %}{% endblock %}
+  <a href={{uri_history}}>history</a>
 {% endblock %}
 
 {% block login %} 
-  <div class="login">
-    {% block login_view %}{% endblock %}
-  </div>
+  {% block login_view %}{% endblock %}
 {% endblock %}
 
 {% block entries %}
