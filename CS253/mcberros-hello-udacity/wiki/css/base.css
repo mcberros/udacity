@@ -1,0 +1,28 @@
+body {
+  font-family: arial;
+  background-color: rgb(185,179,175);
+}
+
+h1 {
+  color: rgb(255,255,255);
+}
+
+.options a {
+  color: rgb(255,255,255);
+}
+
+.login{
+  color: green;
+}
+
+.form{
+  color: green;
+}
+
+.entries{
+  color: rgb(255,255,255);
+}
+
+.ref_top{
+  color: rgb(255,255,255);
+}

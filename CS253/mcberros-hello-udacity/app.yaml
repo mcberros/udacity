@@ -51,6 +51,9 @@ handlers:
 - url: /problem2_2/.*
   script: problem2.problem2_2.app
 
+- url: /wiki/css
+  static_dir: wiki/css
+
 - url: /wiki
   script: wiki.wiki.app
 
