@@ -1,23 +1,26 @@
 {% extends "form_base_user.html" %}
 
 {% block error_username %}
-  <span style="color: red"> {{error_username}} </span>
+  <span style = "color: red"> {{error_username}} </span>
 {% endblock %}
 
 {% block error_password %}
-  <span style="color: red"> {{error_password}} </span>
+  <span style = "color: red"> {{error_password}} </span>
 {% endblock %}
 
 
 {% block error_verify_password_email %}
+  
   <label>
     <div>Verify Password</div>
-    <input type="password" name="verify" value="">
-    <span style="color: red"> {{error_verify}} </span>
+    <input type = "password" name = "verify" value = "">
+    <span style = "color: red"> {{error_verify}} </span>
   </label>
+  
   <label>
     <div>Email (optional)</div>
-    <input type="text" name="email" value={{email}}>
-    <span style="color: red"> {{error_email}} </span>
+    <input type = "text" name = "email" value = {{email}}>
+    <span style = "color: red"> {{error_email}} </span>
   </label>
+
 {% endblock %}

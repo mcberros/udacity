@@ -5,26 +5,32 @@
 {% endblock %}
 
 {% block options %}
-  <a href={{uri_view}}>view</a>
+  <a href = {{uri_view}}>view</a>
 {% endblock %}
 
 {% block form %}
-  <form method="post">
+  <form method = "post">
+
     <label>
       <div>Username</div>
-      <input type="text" name="username" value={{username}}>
+      <input type = "text" name = "username" value = {{username}}>
       {% block error_username %}{% endblock %}
     </label>
+    
     <label>
       <div>Password</div>
-      <input type="password" name="password" value="">
+      <input type = "password" name = "password" value = "">
       {% block error_password %}{% endblock %}
     </label>
+    
     {% block error_verify_password_email %}{% endblock %}
+    
     {% block error_login %}{% endblock %}
+    
     <div>
-      <input type="submit">
+      <input type = "submit">
     </div>
+    
   </form>
 {% endblock %}
 

@@ -1,6 +1,5 @@
 * Herencia en templates: Reducir templates: Hecho
-
-CSS
+* CSS
 Clean Code
 Cache in Wiki
 Automatizar subidas: Stop, start, limpiar BBDD, guardar en Git, deploy en App Engine

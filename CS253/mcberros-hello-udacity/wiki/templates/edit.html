@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 
 {% block options %}
-  <a href={{uri}}>view</a>
-  <a href="/wiki/_history">history</a>
+  <a href = {{uri}}>view</a>
+  <a href = "/wiki/_history">history</a>
 {% endblock %}
 
 {% block login %} 
-  <a href="/wiki/logout">{{username}}(logout)</a>
+  <a href = "/wiki/logout">{{username}}(logout)</a>
 {% endblock %}
 
 {% block form %} 
-  <form method="post">
-    <textarea name="content">{{content}}</textarea>
-    <input type="submit">
+  <form method = "post">
+    <textarea name = "content">{{content}}</textarea>
+    <input type = "submit">
   </form>
 {% endblock %}
 
 {% block ref_top %}
   <hr/>
-  <p> <a href="#top"> Top </a> </p>
+  <p> <a href = "#top"> Top </a> </p>
 {% endblock %}
 
 

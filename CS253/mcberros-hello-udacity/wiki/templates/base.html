@@ -1,42 +1,43 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <title>CS 253 Wiki</title>
-    <meta name="description"
-      content="Wiki Example"/>
-    <meta http-equiv="author"
-      content="@mcberros" />
-    <link href="/wiki/css/base.css" type="text/css" rel="stylesheet" />
+    <meta name = "description"
+      content = "Wiki Example"/>
+    <meta http-equiv = "author"
+      content = "@mcberros" />
+    <link href = "/wiki/css/base.css" type = "text/css" rel = "stylesheet" />
   </head>
 
   <body>
-    <h1 id="top">
+    <h1 id = "top">
       {% block title_body %} 
         CS 253 Wiki
       {% endblock %}
     </h1>
 
-    <div class="options">
+    <div class = "options">
       {% block options %} {% endblock %}
     </div>
 
-    <div class="login">
+    <div class = "login">
       {% block login %} {% endblock %}
     </div>  
     
     <hr />
 
-    <div class="form">
+    <div class = "form">
     {% block form %} {% endblock %}
     </div>
 
-    <div class="entries">
+    <div class = "entries">
     {% block entries %}{% endblock %}
     </div> 
     
-    <div class="ref_top">
+    <div class = "ref_top">
     {% block ref_top %}{% endblock %}
     </div>
-
   </body>
+
 </html>
